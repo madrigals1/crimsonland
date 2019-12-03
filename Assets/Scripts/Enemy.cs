@@ -9,6 +9,9 @@ public class Enemy : MonoBehaviour
     Rigidbody rb;
     CharacterController cc;
     public int hp = 200;
+    public int damage = 40;
+    public float distanceToPlayer = 0;
+    public Player player;
 
     void Start()
     {
@@ -21,6 +24,14 @@ public class Enemy : MonoBehaviour
         Move();
         Die();
         SetOnY();
+        GetDistanceToPlayer();
+    }
+
+    void GetDistanceToPlayer(){
+        distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        if(distanceToPlayer <= 1.1f && !player.flashing){
+            player.GetHurt(damage);
+        }
     }
 
     void Die(){
@@ -39,7 +50,7 @@ public class Enemy : MonoBehaviour
     }
 
     void Move(){
-        MoveTowardsTarget(Values.playerPosition);
+        MoveTowardsTarget(player.transform.position);
     }
 
     void MoveTowardsTarget(Vector3 target) {

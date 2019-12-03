@@ -8,6 +8,9 @@ public class Player : MonoBehaviour
     public Enemy enemy;
     public float speed = 1f;
     public float playerBulletCooldown = 0.25f;
+    public int hp = 200;
+    public float flashTime = 1.5f, flashPeriodOn = 0.1f, flashPeriodOff = 0.1f;
+    public bool flashing = false;
     Rigidbody rb;
     CharacterController cc;
     Transform head, gun1, gun2, bulletHolder, enemyHolder;
@@ -35,7 +38,7 @@ public class Player : MonoBehaviour
         Move();
         RotateHead();
         Shoot();
-        SetPlayerPosition();
+        // SetPlayerPosition();
         SetOnY();
         if(Values.enemyCount > 0){
             SpawnEnemy();
@@ -54,7 +57,7 @@ public class Player : MonoBehaviour
     }
 
     void SetPlayerPosition(){
-        Values.playerPosition = transform.position;
+        // Values.playerPosition = transform.position;
     }
 
     public void SpawnEnemies(){
@@ -81,9 +84,9 @@ public class Player : MonoBehaviour
             }
         }
         if(enposReady){
-            Debug.Log(enpos);
             Enemy enemyIns = Instantiate(enemy, enemyHolder);
             enemyIns.transform.position = enpos;
+            enemyIns.GetComponent<Enemy>().player = this;
             Values.enemyCount--;
         }
     }
@@ -124,5 +127,34 @@ public class Player : MonoBehaviour
 
     float AngleBetweenTwoPoints(Vector3 a, Vector3 b) {
         return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
+    }
+
+    void OnCollisionEnter(Collision other) {
+        Debug.Log(other.gameObject.name);    
+    }
+
+    public void GetHurt(int damage){
+        flashing = true;
+        hp -= damage;
+        if(hp <= 0){
+            Destroy(gameObject);
+        }
+        StartCoroutine(Flash(flashTime));
+    }
+
+    IEnumerator Flash(float ftime){
+        StartCoroutine(FlashUntilFalse());
+        yield return new WaitForSeconds(ftime);
+        GetComponent<Renderer>().enabled = true;
+        flashing = false;
+    }
+
+    IEnumerator FlashUntilFalse(){
+        while(flashing){
+            GetComponent<Renderer>().enabled = false;
+            yield return new WaitForSeconds(flashPeriodOff);
+            GetComponent<Renderer>().enabled = true;
+            yield return new WaitForSeconds(flashPeriodOn);
+        }
     }
 }
