@@ -1,4 +1,4 @@
-# crimsonland
+# Crimsonland
 Crimsonland game clone, game challenge project, made in 1.5 hour
 
 > Pushed from Unity 2019.2.9f1 version, works in any version higher than that and may work in versions lower.
