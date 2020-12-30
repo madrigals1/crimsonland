@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -8,9 +9,12 @@ public class Player : MonoBehaviour
     public Enemy enemy;
     public float speed = 1f;
     public float playerBulletCooldown = 0.25f;
-    public int hp = 200;
+    public float hp = 200;
     public float flashTime = 1.5f, flashPeriodOn = 0.1f, flashPeriodOff = 0.1f;
     public bool flashing = false;
+    public RectTransform hp_bar, death_panel;
+    public Text scoreText;
+    public int score = 0;
     Rigidbody rb;
     CharacterController cc;
     Transform head, gun1, gun2, bulletHolder, enemyHolder;
@@ -43,6 +47,8 @@ public class Player : MonoBehaviour
         if(Values.enemyCount > 0){
             SpawnEnemy();
         }
+        SetHPBar();
+        SetScore();
     }
 
     void FixedUpdate(){
@@ -54,6 +60,14 @@ public class Player : MonoBehaviour
         if(pos.y != 1){
             transform.position = new Vector3(pos.x, 1, pos.z);
         }
+    }
+
+    void SetScore() {
+        scoreText.text = "Score: " + score;
+    }
+
+    void SetHPBar() {
+        hp_bar.sizeDelta = new Vector2((hp / 200f) * 242f, hp_bar.sizeDelta.y);
     }
 
     void SetPlayerPosition(){
@@ -133,11 +147,12 @@ public class Player : MonoBehaviour
         Debug.Log(other.gameObject.name);    
     }
 
-    public void GetHurt(int damage){
+    public void GetHurt(float damage){
         flashing = true;
         hp -= damage;
         if(hp <= 0){
-            Destroy(gameObject);
+            Time.timeScale = 0;
+            death_panel.gameObject.SetActive(true);
         }
         StartCoroutine(Flash(flashTime));
     }
@@ -145,15 +160,15 @@ public class Player : MonoBehaviour
     IEnumerator Flash(float ftime){
         StartCoroutine(FlashUntilFalse());
         yield return new WaitForSeconds(ftime);
-        GetComponent<Renderer>().enabled = true;
+        transform.GetChild(0).GetChild(2).GetComponent<SpriteRenderer>().enabled = true;
         flashing = false;
     }
 
     IEnumerator FlashUntilFalse(){
         while(flashing){
-            GetComponent<Renderer>().enabled = false;
+            transform.GetChild(0).GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
             yield return new WaitForSeconds(flashPeriodOff);
-            GetComponent<Renderer>().enabled = true;
+            transform.GetChild(0).GetChild(2).GetComponent<SpriteRenderer>().enabled = true;
             yield return new WaitForSeconds(flashPeriodOn);
         }
     }

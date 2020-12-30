@@ -8,15 +8,20 @@ public class Enemy : MonoBehaviour
     public float speed = 1f;
     Rigidbody rb;
     CharacterController cc;
-    public int hp = 200;
-    public int damage = 40;
+    SpriteRenderer healthbar;
+    public float hp = 200f;
+    private float max_hp = 200f;
+    public float damage = 40f;
     public float distanceToPlayer = 0;
     public Player player;
+    public Transform explosion;
 
     void Start()
     {
+        max_hp = hp;
         rb = GetComponent<Rigidbody>();
         cc = GetComponent<CharacterController>();
+        healthbar = transform.GetChild(0).GetChild(0).transform.GetComponent<SpriteRenderer>();;
     }
 
     void Update()
@@ -25,6 +30,7 @@ public class Enemy : MonoBehaviour
         Die();
         SetOnY();
         GetDistanceToPlayer();
+        UpdateHealthbar();
     }
 
     void GetDistanceToPlayer(){
@@ -36,6 +42,9 @@ public class Enemy : MonoBehaviour
 
     void Die(){
         if(hp <= 0){
+            Transform explosionIns = Instantiate(explosion);
+            explosionIns.position = rb.transform.position;
+            player.score += 1;
             Destroy(gameObject);
             Values.enemyCount++;
             // Values.player.SpawnEnemy();
@@ -51,6 +60,10 @@ public class Enemy : MonoBehaviour
 
     void Move(){
         MoveTowardsTarget(player.transform.position);
+    }
+
+    void UpdateHealthbar() {
+        healthbar.size = new Vector2(2.4f * (hp / max_hp), 0.32f);
     }
 
     void MoveTowardsTarget(Vector3 target) {
