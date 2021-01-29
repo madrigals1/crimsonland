@@ -3,14 +3,13 @@
 Crimsonland game clone, game challenge project.
 
 ## Demo
+
 [Demo version 0.1.0](https://madrigal.pro/demo/crimsonland/)
+
+![GamePlay](https://i.imgur.com/fTj3nQQ.png)
 
 ## Prerequisites
 - **Unity 2019** - Unity is a cross-platform game engine.
-
-## GamePlay
-
-![GamePlay](https://i.imgur.com/fTj3nQQ.png)
 
 ## Installation
 
